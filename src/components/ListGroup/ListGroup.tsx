@@ -8,8 +8,13 @@ function ListGroup({items, heading, onSelectItem}: Props){
     padding: 0;
     `;
 
-    const ListItem = styled.li`
+    interface ListItemProps{
+        active: boolean;
+    }
+
+    const ListItem = styled.li<ListItemProps>`
     padding: 5px 0;
+    background: ${props => props.active ? 'blue' : 'none'};
     `;
 
 
@@ -18,7 +23,7 @@ function ListGroup({items, heading, onSelectItem}: Props){
         heading: string;
         onSelectItem: (item: string) => void;
     }
-    const [selectedIndex, setSelectedIndex] = useState(-1);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const message = items.length === 0 ? <p>No item found</p> : null;
     return (
         <>
@@ -27,6 +32,7 @@ function ListGroup({items, heading, onSelectItem}: Props){
             <List className="list-group">
                 {items.map((item, index) => (
                 <ListItem 
+                    active={selectedIndex === index}
                     className={selectedIndex === index ? 'list-group-name active' : 'list-group-name'} 
                     key={item} 
                     onClick={() => {

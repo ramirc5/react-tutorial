@@ -1,4 +1,4 @@
-import React from "react";
+import styles from './Button.module.css';
 
 interface Props {
     color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
@@ -7,7 +7,7 @@ interface Props {
 
 const Button = ({onClick, color='primary'}) => {
     return(
-        <button onClick={onClick} className={'btn btn-' + color}>Alert</button>
+        <button className={[styles.btn, styles['btn-' + color]].join(' ')} onClick={onClick}>Alert</button>
     )
 }
 
