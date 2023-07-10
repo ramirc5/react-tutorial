@@ -1,7 +1,7 @@
 import ListGroup from "./components/ListGroup/index";
 import Alert from "./components/Alert";
 import Button from "./components/Button/Button";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { BsCalendarFill } from "react-icons/bs";
 import Like from "./components/Like";
@@ -11,36 +11,33 @@ import ExpenseList from "./components/expense-tracker/components/ExpenseList";
 import ExpenseFilter from "./components/expense-tracker/components/ExpenseFilter";
 import ExpenseForm from "./components/expense-tracker/components/ExpenseForm";
 import categories from "./components/expense-tracker/components/categories";
+import axios from "axios";
+
+
+interface User {
+  id: number;
+  name: string;
+  username: string;
+}
 
 function App() {
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [expenses, setExpenses] = useState([
-    {
-      id: 1, description: 'aaa', amount: 10, category: 'utilities'
-    },
-    {
-      id: 2, description: 'bbb', amount: 20, category: 'utilities'
-    },
-    {
-      id: 3, description: 'ccc', amount: 30, category: 'utilities'
-    },
-    {
-      id: 4, description: 'ddd', amount: 40, category: 'utilities'
-    },
-
-  ]);
-
-  const visibleExpenses = selectedCategory ? expenses.filter(e => e.category === selectedCategory) : expenses;
-
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    axios.get<User[]>("https://jsonplaceholder.typicode.com/users").then((res) => {
+      console.log(setUsers(res.data));
+    })
+    .catch((err) => console.log(err));  
+  }, []);
   return (
-    <div className="container">
-      <div className="mb-5">
-        <ExpenseForm onSubmit={expense => setExpenses([...expenses, { ...expense, id:expenses.length+1}])}/>
-      </div>
-      <div className="mb-3">
-        <ExpenseFilter onSelectCategory={(category) => setSelectedCategory(category)} />
-        <ExpenseList expenses={visibleExpenses} onDelete={(id) => setExpenses(expenses.filter(e => e.id !== id))} />
-      </div>
+    <div>
+      {error && <Alert type="danger">{error}</Alert>}
+      <ul>
+
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
     </div>
   )
 }
