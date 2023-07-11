@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react';
-import {Text} from '@chakra-ui/react';
-import apiClient from '../services/api-clients';
-import { CanceledError } from 'axios';
-
+import { GameQuery } from '../App';
+import useData from './useData';
+import { Genre } from './useGenres';
 export interface Platform {
     id: number;
     name: string;
@@ -14,31 +12,10 @@ export interface Game {
     name: string;
     background_image: string;
     parents_platforms: {platform: Platform}[];
+    metacritic: number;
 }
 
-interface FetchGamesResponse {
-    count: number;
-    results: Game[];
-}
 
-const useGames = () => {
-    const controller = new AbortController();
-    const [games, setGames] = useState<Game[]>([]);
-    const [error, setError] = useState('');
-
-    useEffect(() => {
-        apiClient.get<FetchGamesResponse>('/games', {signal: controller.signal})
-        .then(res => setGames(res.data.results))
-        .catch(err => {
-            if (err instanceof CanceledError) {
-                return;
-            } 
-            setError(err.message);
-        }); 
-        
-        return () => controller.abort();
-    }, []);
-    return {games, error}
-}
+const useGames = (gameQuery: GameQuery) => useData<Game>('/games', { params: { genres: gameQuery.genre?.id, platforms: gameQuery.platform?.id, ordering: gameQuery.sortOrder, search: gameQuery.searchText }}, [gameQuery]);
 
 export default useGames
